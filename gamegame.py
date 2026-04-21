@@ -8,8 +8,7 @@ import time
 import pygame
 import sys
 import ai
-from pause_menu import draw_pause_menu
-from game_over import draw_game_over
+from ui import *
 PLAY_WITH_AI = False  # Đổi thành False nếu muốn chơi 2 người
 AI_PLAYER = 1        # Tèo (P2) sẽ là máy
 # ==========================================

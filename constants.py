@@ -32,15 +32,10 @@ PAUSE_BACK_COLOR = (76, 143, 21)
 RECT_AVARTAR_P1 = (402, 546, 172, 131)
 RECT_AVARTAR_P2 = (404, 46, 163, 120)
 
-# AVATAR_P1 = pygame.Rect(402, 546, 172, 131)
-# AVATAR_P2 = pygame.Rect(404, 46, 163, 120)
 GLOW_COLOR = (255, 255, 100)
 
-RECT_SCORE_P2 = (644, 98, 150, 86)
+RECT_SCORE_P2 = (644, 98, 150, 86) # Khung điểm người chơi 2
 RECT_SCORE_P1 = (160, 529, 147, 88)
-# SCORE_RECT_P2 = pygame.Rect(644, 98, 150, 86) # Khung điểm người chơi Trên
-# SCORE_RECT_P1 = pygame.Rect(160, 529, 147, 88) # Khung điểm người chơi Dưới
-
 
 SCORE_COLOR = (50, 30, 10)
 NUM_COLOR = (137, 110, 29)
@@ -57,3 +52,10 @@ WAIT_COLOR = (93, 97, 87)  # Màu xám cho trạng thái đợi
 
 RESTART = 'assets/icon_restart.png'
 EXIT = 'assets/icon_exit.png'
+MENU_BACKGROUND = 'assets/menu_bg.jpg'
+RULE = 'assets/icon_rule.png'
+
+TIME_P1 = 45
+TIME_P2 = 45
+
+TIME = 3

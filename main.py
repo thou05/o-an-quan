@@ -1,6 +1,6 @@
 import pygame
 import sys
-from menu import run_menu
+from ui import run_menu
 import gamegame
 
 def main():

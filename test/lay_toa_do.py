@@ -4,7 +4,7 @@ import pygame
 import sys
 
 pygame.init()
-bg_image = pygame.image.load('background.png')
+bg_image = pygame.image.load('../assets/background.png')
 screen = pygame.display.set_mode(bg_image.get_size())
 pygame.display.set_caption("Tool Lấy Tọa Độ Rect")
 
