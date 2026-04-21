@@ -1,13 +1,7 @@
-import pygame
-import sys
-from ui import run_menu
-import gamegame
+from play_ui import *
 
-def main():
-    pygame.init()
-    screen = pygame.display.set_mode((960, 720))
-    pygame.display.set_caption("Ô Ăn Quan")
 
+if __name__ == "__main__":
     while True:
         choice = run_menu(screen)
 
@@ -16,11 +10,9 @@ def main():
             sys.exit()
 
         elif choice == "pvp":
-            gamegame.run_game(screen, play_with_ai=False)
+            PLAY_WITH_AI = False
+            play()
 
         elif choice == "ai":
-            gamegame.run_game(screen, play_with_ai=True)
-
-
-if __name__ == "__main__":
-    main()
+            PLAY_WITH_AI = True
+            play()

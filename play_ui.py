@@ -1,18 +1,14 @@
 import copy
 import time
-
-# import constants
-#=====================================
 from constants import *
 from game import *
-
 import os
 import random
 from ui import *
-
 import pygame
 import sys
 import ai
+
 
 icon_restart_rect = pygame.Rect(400, 450, 60, 60)
 icon_exit_rect   = pygame.Rect(500, 450, 60, 60)
@@ -229,7 +225,7 @@ def play():
 
                 continue
 
-            # 👉 CLICK NÚT PAUSE
+            # CLICK NÚT PAUSE
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if game_over(board):
                     if icon_restart_rect.collidepoint(event.pos):
@@ -249,16 +245,6 @@ def play():
                     paused = True
                     continue
 
-            # 1. UI global (pause, menu, button)
-            # if event.type == pygame.MOUSEBUTTONDOWN:
-            #     mouse_pos = event.pos
-            #
-            #     # click nút pause (ưu tiên xử lý trước)
-            #     if PAUSE_BACK_RECT.collidepoint(mouse_pos):
-            #         paused = True
-            #         continue  # tránh click lan xuống các xử lý khác
-
-            # 2. gameplay input
             # Chế độ Người chơi (Chỉ nhận lệnh khi không phải lượt AI và không đang animating)
             if not game_over(board) and not is_animating and not paused:
                 if not (PLAY_WITH_AI and current_player == AI_PLAYER):
@@ -312,26 +298,6 @@ def play():
                     print(f"AI đã đi ô {best_pit} hướng {best_dir}")
 
         # --- HẾT GIỜ ---
-        # if not is_animating and not paused and not game_over(board):
-        #     if current_player == 0 and time_p1 <= 0:
-        #         best_pit, best_dir = ai.get_best_move(board, scores, 0, move)
-        #         if best_pit is not None:
-        #             anim_frames = move(board, scores, 0, best_pit, best_dir)
-        #             is_animating = True
-        #             anim_timer = pygame.time.get_ticks()
-        #             # time_p1 = TIME
-        #             time_p1 = 0
-        #             display_time_p1 = 0
-        #
-        #     elif current_player == 1 and time_p2 <= 0:
-        #         best_pit, best_dir = ai.get_best_move(board, scores, 1, move)
-        #         if best_pit is not None:
-        #             anim_frames = move(board, scores, 1, best_pit, best_dir)
-        #             is_animating = True
-        #             anim_timer = pygame.time.get_ticks()
-        #             # time_p2 = TIME
-        #             time_p2 = 0
-        #             display_time_p2 = 0
         if not is_animating and not paused and not game_over(board):
             if current_player == 0 and time_p1 <= 0:
                 if PLAY_WITH_AI and AI_PLAYER == 0:
@@ -482,43 +448,12 @@ def play():
         screen.blit(diem_p2_surface, diem_p2_rect)
 
         # ==================================================
-        # CHỮ GAME OVER HOẶC HƯỚNG DẪN
+        # CHỮ GAME OVER H
         # ==================================================
-        # if game_over(board):
-        #     # Làm tối mờ nền một chút cho màn hình kết thúc đẹp hơn
-        #     overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
-        #     overlay.fill((0, 0, 0, 150))
-        #     screen.blit(overlay, (0, 0))
-        #
-        #     # Tính toán phân định thắng thua
-        #     if scores[0] > scores[1]:
-        #         kq_text = "TI THANG!"
-        #         color = (0, 255, 0)  # Xanh lá
-        #     elif scores[1] > scores[0]:
-        #         kq_text = "TEO THANG!"
-        #         color = (0, 255, 0)
-        #     else:
-        #         kq_text = "HOA NHAU!"
-        #         color = (255, 255, 0)  # Vàng
-        #
-        #     text_go = font.render("GAME OVER", True, (255, 50, 50))
-        #     text_kq = font.render(kq_text, True, color)
-        #
-        #     screen.blit(text_go, text_go.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 30)))
-        #     screen.blit(text_kq, text_kq.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 30)))
-        # else:
-        #     if selected_cell is not None:
-        #         huong_dan = small_font.render(f"Ban da chon o {selected_cell}. Chon huong rai!", True, (255, 255, 0))
-        #         screen.blit(huong_dan, (WIDTH // 2 - 150, HEIGHT - 50))
         if game_over(board) and not is_animating:
-            # draw_game_over(screen, board, scores, font,
-            #                icon_restart, icon_exit,
-            #                icon_restart_rect, icon_exit_rect)
             draw_game_over(screen, scores, font,
                            icon_restart, icon_exit,
                            icon_restart_rect, icon_exit_rect)
-            # draw_game_over(screen, scores, font,
-            #                icon_restart_rect, icon_exit_rect)
         else:
             if selected_cell is not None:
                 huong_dan = small_font.render(f"", True, (255, 255, 0))
@@ -614,9 +549,6 @@ def play():
 
         # ===== HIỆU ỨNG NHẤP NHÁY =====
         # ===== MÀU MỚI ĐẸP HƠN =====
-        # NORMAL_COLOR = (60, 40, 20)  # nâu đậm
-        # ACTIVE_COLOR = (0, 200, 150)  # vàng nổi
-        # WARNING_COLOR = (255, 255, 255)  # trắng nhấp nháy
         NORMAL_COLOR = (200, 200, 200)  # xám nhạt
 
         ACTIVE_COLOR = (255, 215, 0)  # vàng nổi bật
@@ -627,13 +559,6 @@ def play():
         blink = int(time.time() * 2) % 2
 
         # PLAYER 1
-        # if time_p1 < 10:
-        #     color_p1 = WARNING_COLOR if blink else ACTIVE_COLOR
-        #     warning_p1 = "SAP HET GIO!"
-        # else:
-        #     color_p1 = ACTIVE_COLOR if current_player == 0 else NORMAL_COLOR
-        #     # color_p1 = ACTIVE_COLOR if current_player == 0 else TIME_COLOR_P1
-        #     warning_p1 = ""
         if time_p1 <= 0:
             color_p1 = NORMAL_COLOR  # hoặc giữ màu cố định bạn muốn
             warning_p1 = ""
@@ -645,14 +570,8 @@ def play():
             warning_p1 = ""
 
         # PLAYER 2
-        # if time_p2 < 10:
-        #     color_p2 = WARNING_COLOR if blink else ACTIVE_COLOR
-        #     warning_p2 = "SAP HET GIO!"
-        # else:
-        #     color_p2 = WARNING_COLOR if current_player == 1 else NORMAL_COLOR
-        #     warning_p2 = ""
         if time_p2 <= 0:
-            color_p2 = NORMAL_COLOR  # giữ nguyên, không blink
+            color_p2 = NORMAL_COLOR
             warning_p2 = ""
         elif time_p2 < 10:
             color_p2 = WARNING_COLOR if blink else ACTIVE_COLOR
@@ -663,7 +582,6 @@ def play():
 
         # ===== PLAYER 1 (DƯỚI) =====
         txt_time_p1 = time_font.render(f"{format_time(display_time_p1)}", True, color_p1)
-        # draw_timer_box(screen, 50, HEIGHT - 80, txt_time_p1)
         screen.blit(txt_time_p1, (520, HEIGHT - 80))
 
         if warning_p1:
@@ -672,7 +590,6 @@ def play():
 
         # ===== PLAYER 2 (TRÊN) =====
         txt_time_p2 = time_font.render(f"{format_time(display_time_p2)}", True, color_p2)
-        # draw_timer_box(screen, 50, 40, txt_time_p2)
         screen.blit(txt_time_p2, (415, 50))
 
         if warning_p2:
@@ -680,38 +597,10 @@ def play():
             screen.blit(warn2, (200, 70))
 
 
-        # ====== VẼ MENU PAUSE (LUÔN VẼ TRÊN CÙNG) ======
+        # ====== VẼ MENU PAUSE ======
         if paused:
             draw_pause_menu(screen, btn_continue, btn_restart, btn_quit, font)
-            # overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
-            # overlay.fill((0, 0, 0, 180))
-            # screen.blit(overlay, (0, 0))
-            #
-            # pygame.draw.rect(screen, (200, 200, 200), btn_continue)
-            # pygame.draw.rect(screen, (200, 200, 200), btn_restart)
-            # pygame.draw.rect(screen, (200, 200, 200), btn_quit)
-            #
-            # screen.blit(font.render("Continue", True, (0, 0, 0)), btn_continue.move(30, 10))
-            # screen.blit(font.render("Restart", True, (0, 0, 0)), btn_restart.move(30, 10))
-            # screen.blit(font.render("Quit", True, (0, 0, 0)), btn_quit.move(60, 10))
-
-
 
         # --- BƯỚC 4: CẬP NHẬT FRAME ---
         pygame.display.flip()
 
-if __name__ == "__main__":
-    while True:
-        choice = run_menu(screen)
-
-        if choice == "quit":
-            pygame.quit()
-            sys.exit()
-
-        elif choice == "pvp":
-            PLAY_WITH_AI = False
-            play()
-
-        elif choice == "ai":
-            PLAY_WITH_AI = True
-            play()

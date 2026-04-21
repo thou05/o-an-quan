@@ -1,5 +1,3 @@
-import pygame
-
 
 N = 12
 QUAN_L = 0
@@ -58,4 +56,4 @@ RULE = 'assets/icon_rule.png'
 TIME_P1 = 45
 TIME_P2 = 45
 
-TIME = 3
+TIME = 30

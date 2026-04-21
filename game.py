@@ -62,7 +62,7 @@ def move(board, scores, player, cell, direction):
         next_pos = (pos + direction) % N
 
         # TRƯỜNG HỢP 1: Ô tiếp theo CÓ QUÂN
-        if board[next_pos]["dan"] > 0:
+        if board[next_pos]["dan"] > 0 or board[next_pos]["quan"] > 0:
             if next_pos in QUAN_CELLS:
                 # Chạm ô Quan -> Dừng lượt (Không được bốc Quan đi rải)
                 break
