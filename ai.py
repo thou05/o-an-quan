@@ -12,7 +12,8 @@ def evaluate(board, scores, player_ai):
 
     # Cộng thêm điểm từ quân trên sân (để AI rải quân thông minh hơn)
     player_pits = [1, 2, 3, 4, 5] if player_ai == 0 else [7, 8, 9, 10, 11]
-    score_val += sum(board[i] for i in player_pits) * 0.5
+    # score_val += sum(board[i] for i in player_pits) * 0.5
+    score_val += sum(board[i]["dan"] for i in player_pits) * 0.5
 
     return score_val
 
@@ -22,7 +23,8 @@ def get_best_move(board, scores, player_ai, move_func):
     Tìm nước đi tốt nhất cho AI
     move_func: truyền hàm move từ file chính vào để AI giả lập nước đi
     """
-    valid_pits = [i for i in ([7, 8, 9, 10, 11] if player_ai == 1 else [1, 2, 3, 4, 5]) if board[i] > 0]
+    # valid_pits = [i for i in ([7, 8, 9, 10, 11] if player_ai == 1 else [1, 2, 3, 4, 5]) if board[i] > 0]
+    valid_pits = [i for i in ([7, 8, 9, 10, 11] if player_ai == 1 else [1, 2, 3, 4, 5]) if board[i]["dan"] > 0]
 
     if not valid_pits:
         return None, None

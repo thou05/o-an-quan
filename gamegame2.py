@@ -1,6 +1,7 @@
-
+import copy
+# import constants
 #=====================================
-# from constants import *
+from constants import *
 
 import os
 import random
@@ -9,32 +10,42 @@ import pygame
 import sys
 import ai
 
-PLAY_WITH_AI = True  # Đổi thành False nếu muốn chơi 2 người
-AI_PLAYER = 1        # Tèo (P2) sẽ là máy
+# PLAY_WITH_AI = True  # Đổi thành False nếu muốn chơi 2 người
+# AI_PLAYER = 1        # Tèo (P2) sẽ là máy
 # ==========================================
 # 1. PHẦN LOGIC GAME
 # ==========================================
 
-N = 12
-QUAN_L = 0
-QUAN_R = 6
-
-P1_CELLS = [1, 2, 3, 4, 5]
-P2_CELLS = [7, 8, 9, 10, 11]
-QUAN_CELLS = [QUAN_L, QUAN_R]
-
-P1_VISUAL = [1, 2, 3, 4, 5]
-P2_VISUAL = [11, 10, 9, 8, 7]
+# N = 12
+# QUAN_L = 0
+# QUAN_R = 6
+#
+# P1_CELLS = [1, 2, 3, 4, 5]
+# P2_CELLS = [7, 8, 9, 10, 11]
+# QUAN_CELLS = [QUAN_L, QUAN_R]
+#
+# P1_VISUAL = [1, 2, 3, 4, 5]
+# P2_VISUAL = [11, 10, 9, 8, 7]
 
 
 def init_board():
-    board = [0] * N
-    board[QUAN_L] = 10
-    board[QUAN_R] = 10
+    # board = [0] * N
+    # board[QUAN_L] = 10
+    # board[QUAN_R] = 10
+    # for i in P1_CELLS:
+    #     board[i] = 5
+    # for i in P2_CELLS:
+    #     board[i] = 5
+
+    board = [{"dan": 0, "quan": 0} for _ in range(N)]
+
+    board[QUAN_L] = {"dan": 0, "quan": 1}
+    board[QUAN_R] = {"dan": 0, "quan": 1}
+
     for i in P1_CELLS:
-        board[i] = 5
+        board[i]["dan"] = 5
     for i in P2_CELLS:
-        board[i] = 5
+        board[i]["dan"] = 5
     return board
 
 
@@ -43,15 +54,18 @@ def get_player_pits(player):
 
 
 def valid_moves(board, player):
-    return [i for i in get_player_pits(player) if board[i] > 0]
+    # return [i for i in get_player_pits(player) if board[i] > 0]
+    return [i for i in get_player_pits(player) if board[i]["dan"] > 0]
 
 
 def refill_if_empty(board, scores, player):
     cells = get_player_pits(player)
-    if all(board[i] == 0 for i in cells):
+    # if all(board[i] == 0 for i in cells):
+    if all(board[i]["dan"] == 0 for i in cells):
         if scores[player] >= 5:
             for i in cells:
-                board[i] = 1
+                # board[i] = 1
+                board[i]["dan"] = 1
             scores[player] -= 5
             print(f"Player {player} rải lại 5 quân")
         else:
@@ -61,49 +75,62 @@ def refill_if_empty(board, scores, player):
 
 
 def move(board, scores, player, cell, direction):
-    board = list(board)
+    # board = list(board)
+    board = copy.deepcopy(board)
     scores = list(scores)
 
     # Mảng chứa các "khung hình" trạng thái bàn cờ sau mỗi hành động
     frames = []
 
     pos = cell
-    stones = board[pos]
-    board[pos] = 0
+    # stones = board[pos]
+    # board[pos] = 0
+    stones = board[pos]["dan"]
+    board[pos]["dan"] = 0
     # Khung hình 1: Nhấc quân lên (ô hiện tại về 0)
-    frames.append((list(board), list(scores)))
+    # frames.append((list(board), list(scores)))
+    frames.append((copy.deepcopy(board), list(scores)))
 
     # Quá trình rải sỏi đầu tiên
     while stones > 0:
         pos = (pos + direction) % N
-        board[pos] += 1
+        # board[pos] += 1
+        board[pos]["dan"] += 1
         stones -= 1
-        frames.append((list(board), list(scores)))
+        # frames.append((list(board), list(scores)))
+        frames.append((copy.deepcopy(board), list(scores)))
 
     # --- KIỂM TRA TRẠNG THÁI SAU KHI RẢI XONG ---
     while True:
         next_pos = (pos + direction) % N
 
         # TRƯỜNG HỢP 1: Ô tiếp theo CÓ QUÂN
-        if board[next_pos] > 0:
+        # if board[next_pos] > 0:
+        if board[next_pos]["dan"] > 0:
             if next_pos in QUAN_CELLS:
                 # Chạm ô Quan -> Dừng lượt (Không được bốc Quan đi rải)
                 break
             else:
                 # Chạm ô dân -> Bốc lên rải tiếp
-                stones = board[next_pos]
-                board[next_pos] = 0
-                frames.append((list(board), list(scores)))
+                # stones = board[next_pos]
+                # board[next_pos] = 0
+                stones = board[next_pos]["dan"]
+                board[next_pos]["dan"] = 0
+                # frames.append((list(board), list(scores)))
+                frames.append((copy.deepcopy(board), list(scores)))
                 pos = next_pos
 
                 while stones > 0:
                     pos = (pos + direction) % N
-                    board[pos] += 1
+                    # board[pos] += 1
+                    board[pos]["dan"] += 1
                     stones -= 1
-                    frames.append((list(board), list(scores)))
+                    # frames.append((list(board), list(scores)))
+                    frames.append((copy.deepcopy(board), list(scores)))
 
         # TRƯỜNG HỢP 2: Ô tiếp theo LÀ Ô TRỐNG -> Chuyển sang pha ĂN QUÂN
-        elif board[next_pos] == 0:
+        # elif board[next_pos] == 0:
+        elif board[next_pos]["dan"] == 0 and board[next_pos]["quan"] == 0:
 
             # Vòng lặp xét "Ăn liên tiếp" (Ăn rền)
             while True:
@@ -111,17 +138,28 @@ def move(board, scores, player, cell, direction):
                 o_bi_an = (o_trong + direction) % N
 
                 # Điều kiện ăn: 1 ô trống -> 1 ô có quân
-                if board[o_trong] == 0 and board[o_bi_an] > 0:
+                # if board[o_trong] == 0 and board[o_bi_an] > 0:
+                if board[o_trong]["dan"] == 0 and (board[o_bi_an]["dan"] > 0 or board[o_bi_an]["quan"] == 1):
                     print(f"Player {player} ăn ô {o_bi_an}: {board[o_bi_an]} quân")
 
                     # --- THÊM 2 DÒNG NÀY ĐỂ CHECK XEM CÓ PHẢI LÀ ĂN QUAN KHÔNG ---
-                    if o_bi_an in QUAN_CELLS and board[o_bi_an] >= 10:
-                        scores[player + 2] += 1  # Cộng 1 vào ô "Số Quan ăn được" của player đó
+                    # if o_bi_an in QUAN_CELLS and board[o_bi_an] >= 10:
+                    #     scores[player + 2] += 1  # Cộng 1 vào ô "Số Quan ăn được" của player đó
                     # -----------------------------------------------------------
+                    # Ăn QUAN
+                    if o_bi_an in QUAN_CELLS and board[o_bi_an]["quan"] == 1:
+                        scores[player + 2] += 1
+                        scores[player] += 10
+                        board[o_bi_an]["quan"] = 0
 
-                    scores[player] += board[o_bi_an]
-                    board[o_bi_an] = 0
-                    frames.append((list(board), list(scores)))
+                    # Ăn DÂN
+                    scores[player] += board[o_bi_an]["dan"]
+                    board[o_bi_an]["dan"] = 0
+
+                    # scores[player] += board[o_bi_an]
+                    # board[o_bi_an] = 0
+                    # frames.append((list(board), list(scores)))
+                    frames.append((copy.deepcopy(board), list(scores)))
 
                     # Cập nhật vị trí để vòng lặp xét tiếp xem có được ăn tiếp không
                     pos = o_bi_an
@@ -136,45 +174,50 @@ def move(board, scores, player, cell, direction):
 
 
 def game_over(board):
-    return (board[QUAN_L] == 0 and board[QUAN_R] == 0)
+    # return (board[QUAN_L] == 0 and board[QUAN_R] == 0)
+    return (board[QUAN_L]["quan"] == 0 and board[QUAN_R]["quan"] == 0)
 
 
 # ==========================================
 # 2. PHẦN GIAO DIỆN PYGAME
 # ==========================================
-WIDTH, HEIGHT = 960, 720
-START_X, START_Y = 210, 240
-CELL_WIDTH, CELL_HEIGHT = 105, 110
-TAM_QUAN_TRAI = (160, 350)
-TAM_QUAN_PHAI = (810, 350)
-ARROW_LEFT = 'assets/arrow-left.png'
-ARROW_RIGHT = 'assets/arrow-right.png'
-ARROW_TARGET_HEIGHT = 40
-ICON_PAUSE_FILE = 'assets/pause.png'
-PAUSE_ICON_SIZE = 40
-PAUSE_BACK_COLOR = (76, 143, 21)
+# WIDTH, HEIGHT = 960, 720
+# START_X, START_Y = 210, 240
+# CELL_WIDTH, CELL_HEIGHT = 105, 110
+# TAM_QUAN_TRAI = (160, 350)
+# TAM_QUAN_PHAI = (810, 350)
+# ARROW_LEFT = 'assets/arrow-left.png'
+# ARROW_RIGHT = 'assets/arrow-right.png'
+# ARROW_TARGET_HEIGHT = 40
+# ICON_PAUSE_FILE = 'assets/pause.png'
+# PAUSE_ICON_SIZE = 40
+# PAUSE_BACK_COLOR = (76, 143, 21)
 
-AVATAR_P1 = pygame.Rect(402, 546, 172, 131)
-AVATAR_P2 = pygame.Rect(404, 46, 163, 120)
-GLOW_COLOR = (255, 255, 100)
+# AVATAR_P1 = pygame.Rect(402, 546, 172, 131)
+# AVATAR_P2 = pygame.Rect(404, 46, 163, 120)
+# GLOW_COLOR = (255, 255, 100)
+
+AVATAR_P1 = pygame.Rect(RECT_AVARTAR_P1)
+AVATAR_P2 = pygame.Rect(RECT_AVARTAR_P2)
+SCORE_RECT_P2 = pygame.Rect(RECT_SCORE_P2)
+SCORE_RECT_P1 = pygame.Rect(RECT_SCORE_P1)
+
+# SCORE_RECT_P2 = pygame.Rect(644, 98, 150, 86) # Khung điểm người chơi Trên
+# SCORE_RECT_P1 = pygame.Rect(160, 529, 147, 88) # Khung điểm người chơi Dưới
 
 
-SCORE_RECT_P2 = pygame.Rect(644, 98, 150, 86) # Khung điểm người chơi Trên
-SCORE_RECT_P1 = pygame.Rect(160, 529, 147, 88) # Khung điểm người chơi Dưới
-
-
-SCORE_COLOR = (50, 30, 10)
-NUM_COLOR = (137, 110, 29)
+# SCORE_COLOR = (50, 30, 10)
+# NUM_COLOR = (137, 110, 29)
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Ô Ăn Quan")
-bg_image = pygame.image.load('assets/background.png')
+pygame.display.set_caption(CAPTION)
+bg_image = pygame.image.load(BACKGROUND)
 
 
-font = pygame.font.Font('assets/CaveatBrush-Regular.ttf', 40)
-small_font = pygame.font.Font('assets/CaveatBrush-Regular.ttf', 30)
-font_so_dan = pygame.font.Font('assets/CaveatBrush-Regular.ttf', 25)
+font = pygame.font.Font(FONT, 40)
+small_font = pygame.font.Font(FONT, 30)
+font_so_dan = pygame.font.Font(FONT, 25)
 
 def load_arrow(filename, target_height):
     if (os.path.exists(filename)):
@@ -260,7 +303,7 @@ if __name__ == "__main__":
     is_animating = False       # Đang trong quá trình rải sỏi hay không?
     anim_frames = []           # Chứa danh sách các trạng thái bàn cờ
     anim_timer = 0             # Bộ đếm thời gian
-    ANIM_SPEED = 800           # Độ trễ giữa mỗi lần nhảy số (Tính bằng mili-giây, 300ms = 0.3s)
+    # ANIM_SPEED = 700           # Độ trễ giữa mỗi lần nhảy số (Tính bằng mili-giây, 300ms = 0.3s)
 
 
     while True:
@@ -327,16 +370,17 @@ if __name__ == "__main__":
                             anim_timer = pygame.time.get_ticks()
                             selected_cell = None
 
-                # --- XỬ LÝ LƯỢT CỦA AI (Nằm ngoài vòng lặp event) ---
-                if not game_over(board) and not is_animating:
-                    if PLAY_WITH_AI and current_player == AI_PLAYER:
-                        pygame.time.delay(200)  # Đợi 0.5s cho thật
-                        best_pit, best_dir = ai.get_best_move(board, scores, AI_PLAYER, move)
-                        if best_pit is not None:
-                            anim_frames = move(board, scores, AI_PLAYER, best_pit, best_dir)
-                            is_animating = True
-                            anim_timer = pygame.time.get_ticks()
-                            print(f"AI đã đi ô {best_pit} hướng {best_dir}")
+            # --- XỬ LÝ LƯỢT CỦA AI (Nằm ngoài vòng lặp event) ---
+
+        if not game_over(board) and not is_animating:
+            if PLAY_WITH_AI and current_player == AI_PLAYER:
+                pygame.time.delay(200)  # Đợi 0.5s cho thật
+                best_pit, best_dir = ai.get_best_move(board, scores, AI_PLAYER, move)
+                if best_pit is not None:
+                    anim_frames = move(board, scores, AI_PLAYER, best_pit, best_dir)
+                    is_animating = True
+                    anim_timer = pygame.time.get_ticks()
+                    print(f"AI đã đi ô {best_pit} hướng {best_dir}")
 
         # # --- BƯỚC 2: CẬP NHẬT LOGIC (Check hết quân) ---
         # if not game_over(board):
@@ -353,16 +397,23 @@ if __name__ == "__main__":
 
             # Quét sỏi của Người chơi 1 (Dưới)
             for i in P1_CELLS:
-                if board[i] > 0:
-                    scores[0] += board[i]
-                    board[i] = 0
+                # if board[i] > 0:
+                #     scores[0] += board[i]
+                #     board[i] = 0
+                if board[i]["dan"] > 0:
+                    scores[0] += board[i]["dan"]
+                    board[i]["dan"] = 0
                     co_thu_quan = True
 
             # Quét sỏi của Người chơi 2 (Trên)
             for i in P2_CELLS:
-                if board[i] > 0:
-                    scores[1] += board[i]
-                    board[i] = 0
+                # if board[i] > 0:
+                #     scores[1] += board[i]
+                #     board[i] = 0
+                if board[i]["dan"] > 0:
+                    # scores[0] += board[i]["dan"]
+                    scores[1] += board[i]["dan"]
+                    board[i]["dan"] = 0
                     co_thu_quan = True
 
             if co_thu_quan:
@@ -374,8 +425,8 @@ if __name__ == "__main__":
         # --- HIỆU ỨNG SÁNG VÀ THÔNG BÁO LƯỢT CHƠI ---
         if not game_over(board):
             # Màu sắc cho chữ
-            TEXT_COLOR = (255, 255, 255)  # Màu trắng cho nổi bật
-            WAIT_COLOR = (93, 97, 87)  # Màu xám cho trạng thái đợi
+            # TEXT_COLOR = (255, 255, 255)  # Màu trắng cho nổi bật
+            # WAIT_COLOR = (93, 97, 87)  # Màu xám cho trạng thái đợi
 
             if current_player == 0:
                 # 1. Hiệu ứng sáng cho Tí (P1)
@@ -493,16 +544,55 @@ if __name__ == "__main__":
 
             # Vẽ sỏi và bàn cờ
             for i in range(N):
-                so_luong = board[i]
+                # so_luong = board[i]
+                so_dan = board[i]["dan"]
+                co_quan = board[i]["quan"] == 1
 
                 if i in QUAN_CELLS:
                     # --- VẼ QUAN VÀ SỎI DÂN RƠI VÀO Ô QUAN ---
                     pos = toa_do[i]  # pos đang là (x, y) tâm ô
 
                     # Xác định xem Quan to còn không và có bao nhiêu sỏi nhỏ
-                    co_quan = True if so_luong >= 10 else False
+                    # co_quan = True if so_luong >= 10 else False
+                    # so_dan_trong_quan = so_luong - 10 if co_quan else so_luong
+
+
+
+                    # # 1. Vẽ ảnh Quan to (nếu vẫn chưa bị ăn)
+                    # if co_quan:
+                    #     quan_img = img_quan_trai if i == QUAN_L else img_quan_phai
+                    #     quan_rect = quan_img.get_rect(center=pos)
+                    #     screen.blit(quan_img, quan_rect)
+                    #
+                    # # 2. Vẽ các ảnh sỏi nhỏ (dân) rớt xung quanh viên Quan
+                    # for j in range(so_dan_trong_quan):
+                    #     # Vẫn dùng mảng random để sỏi rơi lộn xộn tự nhiên
+                    #     idx = (i * 20 + j) % len(VISUAL_STONES)
+                    #     img_idx, dx, dy = VISUAL_STONES[idx]
+                    #     soi_img = img_soi_list[img_idx]
+                    #
+                    #     soi_rect = soi_img.get_rect(center=(pos[0] + dx, pos[1] + dy))
+                    #     screen.blit(soi_img, soi_rect)
+                    #
+                    # # 3. Vẽ chữ số đè lên quan (chỉ vẽ khi ô có quân)
+                    # if so_luong > 0:
+                    #     text = small_font.render(str(so_luong), True, NUM_COLOR)
+                    #
+                    #     if i == QUAN_L:
+                    #         # Ô Quan 0 (Bên Trái): Đẩy chữ số xuống góc dưới (Cộng thêm Y)
+                    #         # pos[0] là tọa độ X (giữ nguyên ở giữa), pos[1] + 50 là đẩy Y xuống dưới 50 pixel
+                    #         text_rect = text.get_rect(center=(pos[0] + 30, pos[1] + 110))
+                    #     else:
+                    #         # Ô Quan 2 (Bên Phải - QUAN_R): Đẩy chữ số lên góc trên (Trừ đi Y)
+                    #         # pos[1] - 50 là đẩy Y lên trên 50 pixel
+                    #         text_rect = text.get_rect(center=(pos[0] - 36, pos[1] - 90))
+                    #
+                    #     screen.blit(text, text_rect)
+                    so_luong = board[i]["dan"] + (10 if board[i]["quan"] == 1 else 0)
+                    co_quan = board[i]["quan"] == 1
                     so_dan_trong_quan = so_luong - 10 if co_quan else so_luong
 
+                    # --- GIỮ NGUYÊN CODE CŨ ---
                     # 1. Vẽ ảnh Quan to (nếu vẫn chưa bị ăn)
                     if co_quan:
                         quan_img = img_quan_trai if i == QUAN_L else img_quan_phai
@@ -511,7 +601,6 @@ if __name__ == "__main__":
 
                     # 2. Vẽ các ảnh sỏi nhỏ (dân) rớt xung quanh viên Quan
                     for j in range(so_dan_trong_quan):
-                        # Vẫn dùng mảng random để sỏi rơi lộn xộn tự nhiên
                         idx = (i * 20 + j) % len(VISUAL_STONES)
                         img_idx, dx, dy = VISUAL_STONES[idx]
                         soi_img = img_soi_list[img_idx]
@@ -519,17 +608,13 @@ if __name__ == "__main__":
                         soi_rect = soi_img.get_rect(center=(pos[0] + dx, pos[1] + dy))
                         screen.blit(soi_img, soi_rect)
 
-                    # 3. Vẽ chữ số đè lên quan (chỉ vẽ khi ô có quân)
+                    # 3. Vẽ chữ số
                     if so_luong > 0:
                         text = small_font.render(str(so_luong), True, NUM_COLOR)
 
                         if i == QUAN_L:
-                            # Ô Quan 0 (Bên Trái): Đẩy chữ số xuống góc dưới (Cộng thêm Y)
-                            # pos[0] là tọa độ X (giữ nguyên ở giữa), pos[1] + 50 là đẩy Y xuống dưới 50 pixel
                             text_rect = text.get_rect(center=(pos[0] + 30, pos[1] + 110))
                         else:
-                            # Ô Quan 2 (Bên Phải - QUAN_R): Đẩy chữ số lên góc trên (Trừ đi Y)
-                            # pos[1] - 50 là đẩy Y lên trên 50 pixel
                             text_rect = text.get_rect(center=(pos[0] - 36, pos[1] - 90))
 
                         screen.blit(text, text_rect)
@@ -544,7 +629,8 @@ if __name__ == "__main__":
 
                     # Vẽ ảnh từng viên sỏi dân rơi lộn xộn
                     tam_x, tam_y = rect.centerx, rect.centery
-                    for j in range(so_luong):
+                    # for j in range(so_luong):
+                    for j in range(so_dan):
                         # Dùng (i*15 + j) để đảm bảo mỗi ô có 1 kiểu rơi lộn xộn khác nhau
                         idx = (i * 15 + j) % len(VISUAL_STONES)
                         img_idx, dx, dy = VISUAL_STONES[idx]
@@ -555,7 +641,8 @@ if __name__ == "__main__":
                         screen.blit(soi_img, soi_rect)
 
                     # Tạo chữ số hiển thị ở góc
-                    text = font_so_dan.render(str(so_luong), True, NUM_COLOR)
+                    # text = font_so_dan.render(str(so_luong), True, NUM_COLOR)
+                    text = font_so_dan.render(str(so_dan), True, NUM_COLOR)
 
                     if i in P1_CELLS:
                         # Người chơi 1 (Hàng dưới): Ép xuống góc dưới bên phải, cách mép 8 pixel

@@ -487,6 +487,27 @@ def main(screen):
                 if board[i] > 0:
                     scores[0] += board[i]
                     board[i] = 0
+                    anim_frames.append((list(board), list(scores)))
+                    co_thu_quan = True
+
+            # Quét sỏi của Người chơi 2 (Trên)
+            for i in P2_CELLS:
+                if board[i] > 0:
+                    scores[1] += board[i]
+                    board[i] = 0
+                    anim_frames.append((list(board), list(scores)))
+                    co_thu_quan = True
+
+            if co_thu_quan:
+                print("Hết quan, tàn dân, thu quân, bán ruộng!")
+                is_animating = True
+                anim_timer = pygame.time.get_ticks()
+
+            # Quét sỏi của Người chơi 1 (Dưới)
+            for i in P1_CELLS:
+                if board[i] > 0:
+                    scores[0] += board[i]
+                    board[i] = 0
                     co_thu_quan = True
 
             # Quét sỏi của Người chơi 2 (Trên)
@@ -635,7 +656,7 @@ def main(screen):
         # CHỮ GAME OVER HOẶC HƯỚNG DẪN
         # ==================================================
 
-        if game_over(board):
+        if game_over(board) and not is_animating:
             draw_game_over(screen, board, scores, font,
                            icon_restart, icon_exit,
                            icon_restart_rect, icon_exit_rect)
@@ -721,7 +742,7 @@ def main(screen):
                     screen.blit(text, text_rect)
 
         # Vẽ mũi tên nếu đang có ô được chọn
-        if selected_cell is not None and not game_over(board):
+        if selected_cell is not None and not game_over(board) and not is_animating:
             cell_rect = toa_do[selected_cell]
             offset = -5  # Khoảng cách từ mép ô đến mũi tên
             arrow_left_rect.centery = cell_rect.centery
