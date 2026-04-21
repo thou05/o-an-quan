@@ -312,24 +312,56 @@ def play():
                     print(f"AI đã đi ô {best_pit} hướng {best_dir}")
 
         # --- HẾT GIỜ ---
+        # if not is_animating and not paused and not game_over(board):
+        #     if current_player == 0 and time_p1 <= 0:
+        #         best_pit, best_dir = ai.get_best_move(board, scores, 0, move)
+        #         if best_pit is not None:
+        #             anim_frames = move(board, scores, 0, best_pit, best_dir)
+        #             is_animating = True
+        #             anim_timer = pygame.time.get_ticks()
+        #             # time_p1 = TIME
+        #             time_p1 = 0
+        #             display_time_p1 = 0
+        #
+        #     elif current_player == 1 and time_p2 <= 0:
+        #         best_pit, best_dir = ai.get_best_move(board, scores, 1, move)
+        #         if best_pit is not None:
+        #             anim_frames = move(board, scores, 1, best_pit, best_dir)
+        #             is_animating = True
+        #             anim_timer = pygame.time.get_ticks()
+        #             # time_p2 = TIME
+        #             time_p2 = 0
+        #             display_time_p2 = 0
         if not is_animating and not paused and not game_over(board):
             if current_player == 0 and time_p1 <= 0:
-                best_pit, best_dir = ai.get_best_move(board, scores, 0, move)
+                if PLAY_WITH_AI and AI_PLAYER == 0:
+                    best_pit, best_dir = ai.get_best_move(board, scores, 0, move)
+                else:
+                    # Người chơi hết giờ → random
+                    valid = valid_moves(board, 0)
+                    best_pit = random.choice(valid) if valid else None
+                    best_dir = random.choice([1, -1]) if valid else None
+
                 if best_pit is not None:
                     anim_frames = move(board, scores, 0, best_pit, best_dir)
                     is_animating = True
                     anim_timer = pygame.time.get_ticks()
-                    # time_p1 = TIME
                     time_p1 = 0
                     display_time_p1 = 0
 
             elif current_player == 1 and time_p2 <= 0:
-                best_pit, best_dir = ai.get_best_move(board, scores, 1, move)
+                if PLAY_WITH_AI and AI_PLAYER == 1:
+                    best_pit, best_dir = ai.get_best_move(board, scores, 1, move)
+                else:
+                    # Người chơi hết giờ → random
+                    valid = valid_moves(board, 1)
+                    best_pit = random.choice(valid) if valid else None
+                    best_dir = random.choice([1, -1]) if valid else None
+
                 if best_pit is not None:
                     anim_frames = move(board, scores, 1, best_pit, best_dir)
                     is_animating = True
                     anim_timer = pygame.time.get_ticks()
-                    # time_p2 = TIME
                     time_p2 = 0
                     display_time_p2 = 0
 
@@ -489,7 +521,7 @@ def play():
             #                icon_restart_rect, icon_exit_rect)
         else:
             if selected_cell is not None:
-                huong_dan = small_font.render(f"Ban da chon o {selected_cell}. Chon huong rai!", True, (255, 255, 0))
+                huong_dan = small_font.render(f"", True, (255, 255, 0))
                 screen.blit(huong_dan, (WIDTH // 2 - 150, HEIGHT - 50))
 
 
