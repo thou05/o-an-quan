@@ -1,6 +1,6 @@
 import unittest
 
-from gamegame import *
+from gamegame2 import *
 
 class TestOAnQuan(unittest.TestCase):
 

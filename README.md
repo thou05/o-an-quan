@@ -6,16 +6,16 @@
 - Pygame
 - PowerShell (Windows) hoặc Terminal (Linux/Mac)
 ### Cài đặt
-# Tạo và kích hoạt virtualenv (PowerShell)
+#### Tạo và kích hoạt virtualenv (PowerShell)
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 
-# Nâng pip và cài pygame
+#### Nâng pip và cài pygame
 python -m pip install --upgrade pip
 pip install pygame
 
-# (Tùy chọn) tạo file requirements
+#### (Tùy chọn) tạo file requirements
 "pygame>=2.1" | Out-File -Encoding utf8 requirements.txt
 
-# Chạy game
+#### Chạy game
 python gamegame.py
