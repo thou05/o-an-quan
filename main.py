@@ -10,9 +10,7 @@ if __name__ == "__main__":
             sys.exit()
 
         elif choice == "pvp":
-            PLAY_WITH_AI = False
-            play()
+            play(play_with_ai=False)
 
         elif choice == "ai":
-            PLAY_WITH_AI = True
-            play()
+            play(play_with_ai=True)

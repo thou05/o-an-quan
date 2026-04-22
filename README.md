@@ -32,7 +32,6 @@ Tại thư mục chứa dự án, khởi chạy script chính để mở Menu tr
 ```cmd
 python main.py
 ```
-*(Nếu bạn đang test ở một luồng riêng, file `gamegame.py` cũng tương đương như một điểm entry riêng biệt có thể sử dụng).*
 
 ---
 

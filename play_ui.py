@@ -130,7 +130,7 @@ def draw_timer_box(screen, x, y, text_surface):
     screen.blit(text_surface, rect)
 
 
-def play():
+def play(play_with_ai=PLAY_WITH_AI):
     # Khởi tạo trạng thái game
     board = init_board()
 
@@ -153,6 +153,7 @@ def play():
     btn_quit = pygame.Rect(380, 410, 200, 60)
     display_time_p1 = TIME
     display_time_p2 = TIME
+    timeout_auto_moved = False  # Flag: đã thực hiện nước random khi hết giờ chưa
 
     while True:
         current_time = time.time()
@@ -185,6 +186,7 @@ def play():
                     # Nếu đã chiếu hết các khung hình -> Kết thúc Animation
                     is_animating = False
                     current_player = 1 - current_player  # Đổi lượt!
+                    timeout_auto_moved = False  # Reset flag hết giờ cho lượt mới
 
                     # reset thời gian lượt mới
                     if current_player == 0:
@@ -215,6 +217,7 @@ def play():
                         selected_cell = None
                         is_animating = False
                         anim_frames = []
+                        timeout_auto_moved = False
 
                         paused = False
                         time_p1 = TIME
@@ -234,6 +237,7 @@ def play():
                         current_player = 0
                         selected_cell = None
                         is_animating = False
+                        timeout_auto_moved = False
 
                         time_p1 = TIME
                         time_p2 = TIME
@@ -247,7 +251,7 @@ def play():
 
             # Chế độ Người chơi (Chỉ nhận lệnh khi không phải lượt AI và không đang animating)
             if not game_over(board) and not is_animating and not paused:
-                if not (PLAY_WITH_AI and current_player == AI_PLAYER):
+                if not (play_with_ai and current_player == AI_PLAYER):
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                         mouse_pos = event.pos
                         if selected_cell is None:
@@ -288,7 +292,7 @@ def play():
 
         # --- XỬ LÝ LƯỢT CỦA AI (Nằm ngoài vòng lặp event) ---
         if not game_over(board) and not is_animating and not paused:
-            if PLAY_WITH_AI and current_player == AI_PLAYER:
+            if play_with_ai and current_player == AI_PLAYER:
                 pygame.time.delay(200)  # Đợi 0.5s cho thật
                 best_pit, best_dir = ai.get_best_move(board, scores, AI_PLAYER, move)
                 if best_pit is not None:
@@ -298,12 +302,13 @@ def play():
                     print(f"AI đã đi ô {best_pit} hướng {best_dir}")
 
         # --- HẾT GIỜ ---
-        if not is_animating and not paused and not game_over(board):
+        # Chỉ thực hiện 1 nước auto khi hết giờ, sau đó đợi đổi lượt (timeout_auto_moved)
+        if not is_animating and not paused and not game_over(board) and not timeout_auto_moved:
             if current_player == 0 and time_p1 <= 0:
-                if PLAY_WITH_AI and AI_PLAYER == 0:
+                if play_with_ai and AI_PLAYER == 0:
                     best_pit, best_dir = ai.get_best_move(board, scores, 0, move)
                 else:
-                    # Người chơi hết giờ → random
+                    # Người chơi hết giờ → random 1 nước rồi dừng
                     valid = valid_moves(board, 0)
                     best_pit = random.choice(valid) if valid else None
                     best_dir = random.choice([1, -1]) if valid else None
@@ -314,12 +319,13 @@ def play():
                     anim_timer = pygame.time.get_ticks()
                     time_p1 = 0
                     display_time_p1 = 0
+                    timeout_auto_moved = True  # Đánh dấu đã random, chặn tiếp
 
             elif current_player == 1 and time_p2 <= 0:
-                if PLAY_WITH_AI and AI_PLAYER == 1:
+                if play_with_ai and AI_PLAYER == 1:
                     best_pit, best_dir = ai.get_best_move(board, scores, 1, move)
                 else:
-                    # Người chơi hết giờ → random
+                    # Người chơi hết giờ → random 1 nước rồi dừng
                     valid = valid_moves(board, 1)
                     best_pit = random.choice(valid) if valid else None
                     best_dir = random.choice([1, -1]) if valid else None
@@ -330,6 +336,7 @@ def play():
                     anim_timer = pygame.time.get_ticks()
                     time_p2 = 0
                     display_time_p2 = 0
+                    timeout_auto_moved = True  # Đánh dấu đã random, chặn tiếp
 
         if not game_over(board) and not is_animating:
             # Chỉ nạp lại quân (refill) khi đã rải xong hết
